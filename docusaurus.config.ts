@@ -80,8 +80,8 @@ const config: Config = {
           label: 'Getting started',
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          type: 'doc',
+          docId: 'configuration',
           position: 'left',
           label: 'Configuration',
         },
