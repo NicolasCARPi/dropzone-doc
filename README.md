@@ -1,8 +1,8 @@
 # Dropzone-doc
 
-Documentation for [https://github.com/NicolasCARPi/dropzone](Dropzone project).
+Source code for: https://doc.dropzone.deltablot.app/
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Main project repository: [Dropzone](https://github.com/NicolasCARPi/dropzone).
 
 ## Installation
 
@@ -11,6 +11,8 @@ yarn
 ```
 
 ## Local Development
+
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
 ```bash
 yarn start
