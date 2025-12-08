@@ -1,0 +1,26 @@
+name: Build Docusaurus site
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: fr-par
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build
+        run: npm run build
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync build s3://deltablot-dropzone-doc --endpoint-url https://s3.fr-par.scw.cloud --delete
