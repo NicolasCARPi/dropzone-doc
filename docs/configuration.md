@@ -9,7 +9,7 @@ sidebar_position: 2
 In this section we'll co over the fundamentals of configuring Dropzones.
 
 :::info
-You should already be familiar on how to pass a configuration object to Dropzone in the [declarative](https://docs.dropzone.dev/getting-started/setup/declarative) and the [imperative](https://docs.dropzone.dev/getting-started/setup/imperative) way. If not, please visit the respective sections.
+You should already be familiar on how to pass a configuration object to Dropzone in the [declarative](./intro#declarative-configuration) and the [imperative](./intro#imperative) way. If not, please visit the respective sections.
 :::
 
 This is what a typical configuration of Dropzone would look like:
@@ -48,36 +48,16 @@ let myDropzone = Dropzone({
 
 
 :::info
-For a list of all possible options, refer to the [`src/options.js`](https://github.com/dropzone/dropzone/blob/main/src/options.js) file.
+For a list of all possible options, refer to the [`src/options.js`](https://github.com/NicolasCARPi/dropzone/blob/main/src/options.js) file.
 :::
 
 ## Events
 
-If you want to react to events happening (a file has been added or removed, an upload started, a progress changed, etc...) you want to be listening to events. Checkout the events section for more information on events.
-
-[events](https://docs.dropzone.dev/configuration/events)
-
-## Overriding default event handlers
-
-:::danger
-In general **you should never have to do this**, and you should be familiar with the code if you decide to do it.
-:::
-
-You can also override default event handlers. This should be approached with absolute caution since it can break if you upgrade the library and can also remove default functionality that you might not want to  lose:
-
-~~~javascript
-let myDropzone = Dropzone("#my-element", {
-  addedfile: file => {
-    // ONLY DO THIS IF YOU KNOW WHAT YOU'RE DOING!
-  }
-});
-~~~
-
-The difference here, is that the default event handler `addedfile` has been changed, instead of adding a new event handler with `myDropzone.on("addedfile", () => {})`
+If you want to react to events happening (a file has been added or removed, an upload started, a progress changed, etc...) you want to be listening to events. Checkout the [events section](./events) for more information on events.
 
 ## Configuration Options
 
-Here is a list of all available options for Dropzone. In case any of this information is outdated (please inform us, if that's the case) or you need more insight, you can always look at the [options.js](https://github.com/dropzone/dropzone/blob/main/src/options.js) that is used in the actual library.
+Here is a list of all available options for Dropzone. In case any of this information is outdated (please inform us, if that's the case) or you need more insight, you can always look at the [options.js](https://github.com/NicolasCARPi/dropzone/blob/master/src/options.js) that is used in the actual library.
 
 | Name                    | Default     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ----------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -160,146 +140,21 @@ The default options for Dropzone will look for those element and update the cont
 
 If you want some specific link to remove a file (instead of the built in `addRemoveLinks` config), you can simply insert elements in the template with the `data-dz-remove` attribute. Example:
 
-```markup
+~~~html
 <img src="removebutton.png" alt="Click me to remove the file." data-dz-remove />
-```
+~~~
 
 You are not forced to use those conventions though. If you override all the default event listeners you can completely rebuild your layout from scratch.
 
 See the installation section on how to add the stylesheet if you want your Dropzone to look like the example dropzone.
 
-See the [Theming](https://docs.dropzone.dev/configuration/theming) section, for a more in depth look at how to completely change Dropzone’s UI.
-
-I created an example where I made Dropzone look and feel exactly the way jQuery File Uploader does with a few lines of configuration code. [Check it out!](https://www.dropzonejs.com/bootstrap.html)
-
-
-## Methods
-
-If you want to remove an added file from the dropzone, you can call `.removeFile(file)`. This method also triggers the `removedfile` event.
-
-Here’s an example that would automatically remove a file when it’s finished uploading:
-
-```javascript
-myDropzone.on("complete", function(file) {
-  myDropzone.removeFile(file);
-});
-```
-
-If you want to remove all files, simply use `.removeAllFiles()`. Files that are in the process of being uploaded won’t be removed. If you want files that are currently uploading to be canceled, call `.removeAllFiles(true)` which will cancel the uploads.
-
-If you have `autoProcessQueue` disabled, you’ll need to call `.processQueue()`yourself.
-
-This can be useful if you want to display the files and let the user click an accept button to actually upload the file(s).
-
-To access all files in the dropzone, use `myDropzone.files`.
-
-To get
-
-* all accepted files: `.getAcceptedFiles()`
-* all rejected files: `.getRejectedFiles()`
-* all queued files: `.getQueuedFiles()`
-* all uploading files: `.getUploadingFiles()`
-
-If you do not need a dropzone anymore, just call `.disable()` on the object. This will remove all event listeners on the element, and clear all file arrays. To reenable a Dropzone use `.enable()`.
-
-If you don’t like the default browser modals for `confirm` calls, you can handle them yourself by overwriting `Dropzone.confirm`.
-
-```javascript
-Dropzone.confirm = function(question, accepted, rejected) {
-  // Ask the question, and call accepted() or rejected() accordingly.
-  // CAREFUL: rejected might not be defined. Do nothing in that case.
-};
-```
-
-If you want Dropzone to display an image you have on your server, you can use:
-
-```javascript
-// callback and crossOrigin are optional
-let mockFile = { name: "Filename", size: 12345 };
-myDropzone.displayExistingFile(mockFile, 'https://image-url');
-```
-
-See the FAQ on [How to show files stored on server](https://github.com/dropzone/dropzone/discussions/1909).
-
-## Upload Queue
-
-When a file gets added to the dropzone, its `status` gets set to `Dropzone.QUEUED`(after the `accept` function check passes) which means that the file is now in the queue.
-
-If you have the option `autoProcessQueue` set to `true` then the queue is immediately processed, after a file is dropped or an upload finished, by calling`.processQueue()` which checks how many files are currently uploading, and if it’s less than `options.parallelUploads`, `.processFile(file)` is called.
-
-If you set `autoProcessQueue` to `false`, then `.processQueue()` is never called implicitly. This means that you have to call it yourself when you want to upload all files currently queued.
-
-
-## Events
-
-Dropzone triggers events when processing files, to which you can register easily, by calling `.on(eventName, callbackFunction)` on your Dropzone **instance:**
-
-```javascript
-let myDropzone = Dropzone("#my-element", { /* options */ });
-myDropzone.on("addedfile", file => {
-  console.log("A file has been added");
-});
-```
-
-If you're configuring your Dropzone declaratively, then you don't have access to the instance to add events. In these case, you can use the `init` config, which is a function that is invoked when the Dropzone is initialized:
-
-```javascript
-Dropzone.options.myElement = {
-  // Note: using "function()" here to bind `this` to
-  // the Dropzone instance.
-  init: function() {
-    this.on("addedfile", file => {
-      console.log("A file has been added");
-    });
-  }
-};
-```
-
-:::warning
-**Careful**: when providing the init function, make sure you use the `function()` syntax instead of the arrow syntax, because otherwise the keyword `this` will not reference the Dropzone instance. For more information read up on the [difference between the arrow function expression and the function expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions).
-:::
-
-Both ways are perfectly fine, but you need to use the `init()` function if you setup your Dropzone declaratively.
-
-:::info
-Dropzone itself relies heavily on events. Everything that’s visual is created by listening to them. They are a fundamental part of making Dropzone look and feel how you want it to.
-:::
-
-### List of all events
-
-We will be listing all possible events here soon, but until we do that, you can find all of them, well documented in the [source code](https://github.com/dropzone/dropzone/blob/main/src/options.js#L574). These are the implementations for the default event handles so you can see which arguments they receive. You can ignore the content of them if you aren't interested, or override the default behaviour (explained in the next section).
-
-### Overriding default event handlers
-
-:::danger
-In general **you should never have to do this**, and you should be familiar with the code if you decide to do it.
-:::
-
-You can also override default event handlers. This should be approached with absolute caution since it can break if you upgrade the library and can also remove default functionality that you might not want to  lose:
-
-```javascript
-let myDropzone = Dropzone("#my-element", {
-  addedfile: file => {
-    // ONLY DO THIS IF YOU KNOW WHAT YOU'RE DOING!
-  }
-});
-```
-
-The difference here, is that the default event handler `addedfile` has been changed, instead of adding a new event handler with `myDropzone.on("addedfile", () => {})`
-
-You should only do this when you really know how Dropzone works, and when you want to [completely theme your Dropzone](https://docs.dropzone.dev/configuration/theming).
+See the [Theming](./configuration#theming) section, for a more in depth look at how to completely change Dropzone’s UI.
 
 ## Theming
 
 If you want to theme your Dropzone to look fully customized, in most cases you can simply replace the preview HTML template, adapt your CSS, and maybe create a few additional event listeners.
 
-It's covered in the Layout section.
-
-[layout](https://docs.dropzone.dev/configuration/basics/layout)
-
-You will go very far with this approach. As an example, I created an example where I made Dropzone look and feel exactly the way jQuery File Uploader does with a few lines of configuration code. [Check it out!](https://www.dropzone.dev/bootstrap.html)
-
-As you can see, the biggest change is the `previewTemplate`. I then added a few additional event listeners to make it look exactly like the reference.
+It's covered in the [Layout section](./configuration#layout).
 
 ## Completely change the way Dropzone is displayed
 
@@ -307,7 +162,7 @@ Dropzone itself sets up a lot of event listeners when a Dropzone is created, tha
 
 *Everything* visual is done in those event handlers. If you would overwrite all of them with empty functions, Dropzone would still be fully functional, but wouldn’t display the dropped files anymore.
 
-> If you like the default look of Dropzone, but would just like to add a few bells and whistles here and there, you should just [add additional event listeners](https://docs.dropzone.dev/configuration/events) instead.
+> If you like the default look of Dropzone, but would just like to add a few bells and whistles here and there, you should just [add additional event listeners](./events) instead.
 
 Overwriting the default event listeners, and creating your own, custom Dropzone, would look something like this:
 
@@ -335,5 +190,3 @@ Dropzone.myDropzone.options = {
 Obviously this lacks the actual implementation. Look at the source to see how Dropzone does it internally.
 
 You should use this option if you don’t need any of the default Dropzone UI, but are only interested in Dropzone for it’s event handlers, file upload and drag’n’drop functionality.
-
-
